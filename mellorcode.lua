@@ -1,8 +1,8 @@
-game.Players.LocalPlayer.Character.Humanoid.MaxHealth = 10000
+game.Players.LocalPlayer.Character.Humanoid.MaxHealth = 100000000
 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Robojini/Tuturial_UI_Library/main/UI_Template_1"))()
 
-local Window = Library.CreateLib("MellorCode", "RJTheme3")
+local Window = Library.CreateLib("MellorCode Beta", "RJTheme3")
 
 local Tab = Window:NewTab("Player")
 
@@ -13,16 +13,19 @@ Section:NewSlider("WalkSpeed", "Look how fast I can run!", 500, 0, function(s)
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
 end)
 
+Section:NewButton("WalkSpeed2", "AntiCheat Bypass", function()
+while game:GetService("RunService").RenderStepped:wait() do
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 75
+end
+end)
+
+
 Section:NewSlider("JumpPower", "Look how high I jump!", 500, 0, function(s)
     game.Players.LocalPlayer.Character.Humanoid.JumpPower = s
 end)
 
-Section:NewTextBox("HipHeight", "You're getting bigger", function(txt)
-	game:GetService("Workspace").zwe1231.Humanoid.HipHeight = txt
-end)
-
-Section:NewTextBox("InfinityHealth", "GodMode v2?", function(txt)
-    game.Players.LocalPlayer.Character.Humanoid.Health = txt
+Section:NewButton("GodMode", "infinityHP", function()
+    game.Players.LocalPlayer.Character.Humanoid.Health = 100000000
 end)
 
 
@@ -71,46 +74,104 @@ end)
 tool.Parent = game.Players.LocalPlayer.Backpack
 end)
 
-Section:NewToggle("InfinityJump", "InfinityJumping", function(state)
-    if state then
-        local InfiniteJumpEnabled = true
-game:GetService("UserInputService").JumpRequest:connect(function()
-	if InfiniteJumpEnabled then
-		game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
-	end
-end)
-    else
-        local InfiniteJumpEnabled = true
-game:GetService("UserInputService").JumpRequest:connect(function()
-	if InfiniteJumpEnabled then
-		game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
-	end
-end)
-    end
-end)
-
 local Tab = Window:NewTab("Murder Mystery 2")
 
 local Section = Tab:NewSection("Settings")
 
-Section:NewToggle("Aimbot", "Aimbot", function(state)
-    if state then
-        getgenv().AimPart = "Head" 
-getgenv().ThirdPerson = false 
-getgenv().FirstPerson = true 
-getgenv().WallCheck = false 
-getgenv().TeamCheck = true
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/zxciaz/Universal-Scripts/main/Aimbot", true))()
-    else
-        getgenv().AimPart = "Head" 
-getgenv().ThirdPerson = false 
-getgenv().FirstPerson = true 
-getgenv().WallCheck = false 
-getgenv().TeamCheck = true 
- 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/zxciaz/Universal-Scripts/main/Aimbot", true))()
+Section:NewButton("AutoGrab", "MurderMystery2", function()
+    if Toggles.AutoGun.Value and roles[LocalPlayer] == "Innocent" then
+            local gundrop = Workspace:FindFirstChild("GunDrop")
+            if gundrop and not lastCFrame then
+                lastCFrame = character.HumanoidRootPart.CFrame
+                task.spawn(pcall, function()
+                    repeat
+                        character.HumanoidRootPart.CFrame = gundrop.CFrame
+                        RunService.Stepped:Wait()
+                    until not gundrop:IsDescendantOf(Workspace) or not Toggles.AutoGun.Value
+                    character.HumanoidRootPart.CFrame = lastCFrame
+                    lastCFrame = false
+                end)
+            end
+        end
+end)
+    
+
+Section:NewButton("ESP", "Esp murder and sheriff", function()
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LP = Players.LocalPlayer
+local roles
+
+function CreateHighlight()
+    for i, v in pairs(Players:GetChildren()) do
+        if v ~= LP and v.Character and not v.Character:FindFirstChild("Highlight") then
+            Instance.new("Highlight", v.Character)           
+        end
     end
+end
+
+function UpdateHighlights()
+    for _, v in pairs(Players:GetChildren()) do
+        if v ~= LP and v.Character and v.Character:FindFirstChild("Highlight") then
+            Highlight = v.Character:FindFirstChild("Highlight")
+            if v.Name == Sheriff and IsAlive(v) then
+                Highlight.FillColor = Color3.fromRGB(0, 0, 225)
+            elseif v.Name == Murder and IsAlive(v) then
+                Highlight.FillColor = Color3.fromRGB(225, 0, 0)
+            elseif v.Name == Hero and IsAlive(v) and not IsAlive(game.Players[Sheriff]) then
+                Highlight.FillColor = Color3.fromRGB(255, 250, 0)
+            else
+                Highlight.FillColor = Color3.fromRGB(0, 225, 0)
+            end
+        end
+    end
+end 
+
+function IsAlive(Player)
+    for i, v in pairs(roles) do
+        if Player.Name == i then
+            if not v.Killed and not v.Dead then
+                return true
+            else
+                return false
+            end
+        end
+    end
+end
+
+
+
+RunService.RenderStepped:connect(function()
+    roles = ReplicatedStorage:FindFirstChild("GetPlayerData", true):InvokeServer()
+    for i, v in pairs(roles) do
+        if v.Role == "Murderer" then
+            Murder = i
+        elseif v.Role == 'Sheriff'then
+            Sheriff = i
+        elseif v.Role == 'Hero'then
+            Hero = i
+        end
+    end
+    CreateHighlight()
+    UpdateHighlights()
+end)
+end)
+
+
+Section:NewButton("WhoMurder?", "MurderMystery2", function()
+    for i,v in pairs(game:GetService("Players"):GetChildren()) do
+    local items = v.Backpack
+    if items:FindFirstChild("Knife") then
+        print(v.Name .. " Is the murder")
+    else if items:FindFirstChild("Gun") then
+        print(v.Name .. " Is the sheriff")
+    else
+        print(v.Name .. " Is innocent")
+    end
+    end
+end
 end)
 
 
@@ -160,158 +221,107 @@ end
     end
 end)
 
-Section:NewToggle("Tracer", "Not info", function(state)
-    if state then
-        local loPlayer = game.Players.LocalPlayer
-local camera = game:GetService("Workspace").CurrentCamera
-local CurrentCamera = workspace.CurrentCamera
-local worldToViewportPoint = CurrentCamera.worldToViewportPoint
+Section:NewButton("Chams", "Chams players", function()
+    
+local coreGui = game:GetService("CoreGui")
+local runService = game:GetService("RunService")
 
-_G.TeamCheck = true
+local viewportGui = Instance.new("ScreenGui", coreGui)
+viewportGui.IgnoreGuiInset = true
 
-for i,v in pairs(game.Players:GetChildren()) do
-    local Tracer = Drawing.new("Line")
-    Tracer.Visible = false
-    Tracer.Color = Color3.new(1,1,1)
-    Tracer.Thickness = 1
-    Tracer.Transparency = 1
+local viewportFrame = Instance.new("ViewportFrame")
+viewportFrame.Parent = viewportGui
+viewportFrame.CurrentCamera = workspace.CurrentCamera
+viewportFrame.BackgroundTransparency = 1
+viewportFrame.Size = UDim2.new(1, 0, 1, 0)
+viewportFrame.Position = UDim2.new(0, 0, 0, 0)
 
-    function tracer()
-        game:GetService("RunService").RenderStepped:Connect(function()
-            if v.Character ~= nil and v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("HumanoidRootPart") ~= nil and v ~= loPlayer and v.Character.Humanoid.Health > 0 then
-                local Vector, OnScreen = camera:worldToViewportPoint(v.Character.HumanoidRootPart.Position)
+function clonePart(part, model, character)
+   
+    if part:IsA("BasePart") then
+        local head = character:WaitForChild("Head")
 
-                if OnScreen then
-                    Tracer.From = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 1)
-                    Tracer.To = Vector2.new(Vector.X, Vector.Y)
+        
+        local clone = part:Clone() 
 
-                    if _G.TeamCheck and v.TeamColor == loPlayer.TeamColor then
+        for _, obj in next, clone:GetChildren() do
+            
+            if not obj:IsA("SpecialMesh") then
+                obj:Destroy()
+                continue
+            end
 
-                        Tracer.Visible = false
-                    else
+            
+            obj.TextureId = ""
+        end
+        clone.Color = Color3.fromRGB(0, 255, 0)
+        clone.Parent = model
 
-                        Tracer.Visible = true
-                    end
+        
+        runService.RenderStepped:connect(function()
+            
+            if head:IsDescendantOf(workspace) then
+                
+                local _, visible = workspace.CurrentCamera:WorldToViewportPoint(part.Position)
+
+               
+                if visible then
+                    
+                    clone.CFrame = part.CFrame
+                    clone.Size = part.Size
+                    clone.Transparency = part.Transparency < 1 and 0 or 1
                 else
-                    Tracer.Visible = false
+                    
+                    clone.Transparency = 1
                 end
             else
-                Tracer.Visible = false
+                
+                model:Destroy()
+                return
             end
         end)
     end
-    coroutine.wrap(tracer)()
 end
 
-game.Players.PlayerAdded:Connect(function(v)
-    local Tracer = Drawing.New("Line")
-    Tracer.Visible = false
-    Tracer.Color = Color3.new(1,1,1)
-    Tracer.Thickness = 1
-    Tracer.Transparency = 1
+function chams(character)
+    local model = Instance.new("Model")
+    model.Name = character.Name
+    model.Parent = viewportFrame
 
-    function tracer()
-        game:GetService("RunService").RenderStepped:Connect(function()
-            if v.Character ~= nil and v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("HumanoidRootPart") ~= nil and v ~= loPlayer and v.Character.Humanoid.Health > 0 then
-                local Vector, OnScreen = camera:worldToViewportPoint(v.Character.HumanoidRootPart.Position)
-
-                if OnScreen then
-                    Tracer.From = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 1)
-                    Tracer.To = Vector2.new(Vector.X, Vector.Y)
-
-                    if _G.TeamCheck and v.TeamColor == loPlayer.TeamColor then
-
-                        Tracer.Visible = false
-                    else
-
-                        Tracer.Visible = true
-                    end
-                else
-                    Tracer.Visible = false
-                end
-            else
-                Tracer.Visible = false
-            end
-        end)
+    for _, obj in next, character:GetChildren() do
+        if character:FindFirstChild("Head") then
+            clonePart(obj, model, character)
+        end
     end
-    coroutine.wrap(tracer)()
-end)
-    else
-        local loPlayer = game.Players.LocalPlayer
-local camera = game:GetService("Workspace").CurrentCamera
-local CurrentCamera = workspace.CurrentCamera
-local worldToViewportPoint = CurrentCamera.worldToViewportPoint
-
-_G.TeamCheck = true
-
-for i,v in pairs(game.Players:GetChildren()) do
-    local Tracer = Drawing.new("Line")
-    Tracer.Visible = false
-    Tracer.Color = Color3.new(1,1,1)
-    Tracer.Thickness = 1
-    Tracer.Transparency = 1
-
-    function tracer()
-        game:GetService("RunService").RenderStepped:Connect(function()
-            if v.Character ~= nil and v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("HumanoidRootPart") ~= nil and v ~= loPlayer and v.Character.Humanoid.Health > 0 then
-                local Vector, OnScreen = camera:worldToViewportPoint(v.Character.HumanoidRootPart.Position)
-
-                if OnScreen then
-                    Tracer.From = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 1)
-                    Tracer.To = Vector2.new(Vector.X, Vector.Y)
-
-                    if _G.TeamCheck and v.TeamColor == loPlayer.TeamColor then
-
-                        Tracer.Visible = false
-                    else
-
-                        Tracer.Visible = true
-                    end
-                else
-                    Tracer.Visible = false
-                end
-            else
-                Tracer.Visible = false
-            end
-        end)
-    end
-    coroutine.wrap(tracer)()
 end
 
-game.Players.PlayerAdded:Connect(function(v)
-    local Tracer = Drawing.New("Line")
-    Tracer.Visible = false
-    Tracer.Color = Color3.new(1,1,1)
-    Tracer.Thickness = 1
-    Tracer.Transparency = 1
 
-    function tracer()
-        game:GetService("RunService").RenderStepped:Connect(function()
-            if v.Character ~= nil and v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("HumanoidRootPart") ~= nil and v ~= loPlayer and v.Character.Humanoid.Health > 0 then
-                local Vector, OnScreen = camera:worldToViewportPoint(v.Character.HumanoidRootPart.Position)
+for _, plr in next, game:GetService("Players"):GetChildren() do
+    -- get character
+    local character = plr.Character or plr.CharacterAdded:Wait()
+    character:WaitForChild("Head")
 
-                if OnScreen then
-                    Tracer.From = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 1)
-                    Tracer.To = Vector2.new(Vector.X, Vector.Y)
+    
+    chams(character)
 
-                    if _G.TeamCheck and v.TeamColor == loPlayer.TeamColor then
+    
+    plr.CharacterAdded:connect(function(char)
+    
+        char:WaitForChild("Head")
+        chams(char)
+    end)
+end
 
-                        Tracer.Visible = false
-                    else
-
-                        Tracer.Visible = true
-                    end
-                else
-                    Tracer.Visible = false
-                end
-            else
-                Tracer.Visible = false
-            end
-        end)
-    end
-    coroutine.wrap(tracer)()
+game:GetService("Players").PlayerAdded:connect(function(plr)
+    local character = plr.Character or plr.CharacterAdded:Wait()
+    character:WaitForChild("Head")
+    chams(character)
+    
+    plr.CharacterAdded:connect(function(char)
+        char:WaitForChild("Head")
+        chams(char)
+    end)
 end)
-    end
 end)
 
 
@@ -330,7 +340,7 @@ Section:NewButton("SpamBot", "Spamming the chat", function()
 local chatrem = game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest
 
 while task.wait(settings.AutoChat_Time) do
-    chatrem:FireServer('get good get blinkwinner.pov', "All")
+    chatrem:FireServer('get good get mellorcode', "All")
     print("Sent Message")
 end
 end)
@@ -357,4 +367,9 @@ Section:NewButton("AntiAFK", "no kick long time afk", function()
 end
 end)
 
+Section:NewButton("Spam F9", "Check F9", function()
+    while game:GetService("RunService").RenderStepped:wait() do
+        print("MellorCode SPAAAM")
+ end      
+end)
 
