@@ -1,7 +1,8 @@
 local whitelistecheck = loadstring(game:HttpGet("https://raw.githubusercontent.com/Robojini/White-List/main/DataBase", true))()
 
 userids = {
-[3973824842] = true
+[3973824842] = true,
+[3795008910] = true
 }
 return userids
 
