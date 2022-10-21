@@ -7,7 +7,7 @@ userids = {
 return userids
 
 if whitelistecheck[game:service('Players').LocalPlayer.UserId] then
-  loadstring(game:HttpGet("https://raw.githubusercontent.com/Mellor123CC/MellorCode/main/mellorcode.lua%22))()
+  loadstring(game:HttpGet("https://raw.githubusercontent.com/Mellor123CC/MellorCode/main/mellorcode.lua"))()
 else
   game:service('Players').LocalPlayer:Kick('Bruh')
 end
