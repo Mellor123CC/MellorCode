@@ -24,8 +24,11 @@ Section:NewSlider("JumpPower", "Look how high I jump!", 500, 0, function(s)
     game.Players.LocalPlayer.Character.Humanoid.JumpPower = s
 end)
 
-Section:NewButton("GodMode", "infinityHP", function()
-    game.Players.LocalPlayer.Character.Humanoid.Health = 100000000
+Section:NewButton("GodMode", "Gives you god mode", function()
+    local Character = Player.Character or Player.CharacterAdded:Wait()
+    local Hum = Character:WaitForChild("Humanoid")
+    Hum.Parent = nil;
+    Hum.Parent = Character;
 end)
 
 
@@ -172,6 +175,62 @@ Section:NewButton("WhoMurder?", "MurderMystery2", function()
     end
     end
 end
+end)
+
+
+local Tab = Window:NewTab("Tower of Hell")
+
+local Section = Tab:NewSection("Settings")
+
+Section:NewButton("AntiCheat Bypass", "No kick and ban", function()
+local reg = getreg()
+
+for i, Function in next, reg do
+    if type(Function) == 'function' then
+        local info = getinfo(Function)
+        
+        if info.name == 'kick' then
+            if (hookfunction(info.func, function(...)end)) then
+                print'succesfully hooked kick'
+            else
+                print'failed to hook kick'
+            end
+        end
+    end
+end
+end)
+
+Section:NewButton("InfinityJump", "Infinity work 2022", function()
+    local InfiniteJumpEnabled = true
+game:GetService("UserInputService").JumpRequest:connect(function()
+    if InfiniteJumpEnabled then
+        game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
+    end
+end)
+end)
+
+Section:NewButton("AutoFarm", "Ez work exploit", function()
+    while true do wait(5) game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").tower.finishes.Finish.CFrame game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").tower.finishes.Finish.CFrame game:GetService("TeleportService"):Teleport(1962086868, game:GetService("Players").LocalPlayer) 
+    end
+end)
+
+
+
+Section:NewButton("Get all tool", "ButtonInfo", function()
+     for _,e in pairs(game.Players.LocalPlayer.Backpack:GetDescendants()) do
+        if e:IsA("Tool") then
+        e:Destroy()
+        end
+        end
+        wait() 
+        for _,v in pairs(game.ReplicatedStorage.Gear:GetDescendants()) do
+        if v:IsA("Tool") then
+        local CloneThings = v:Clone()
+        wait()
+        CloneThings.Parent = game.Players.LocalPlayer.Backpack
+ 
+        end
+        end
 end)
 
 
